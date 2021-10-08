@@ -46,6 +46,10 @@ class Register extends Component {
       .then((res) => {
         if (res.status === 200) {
           document.getElementById("reg-form").reset();
+          this.setState({
+            user_validation: "",
+            password_validation: "",
+          });
           toast.success(
             res.data.username + " has been registered successfully!",
             {
@@ -58,6 +62,10 @@ class Register extends Component {
             }
           );
         } else {
+          this.setState({
+            user_validation: "",
+            password_validation: "",
+          });
           toast.error(res.data.message, {
             position: "bottom-right",
             autoClose: 2500,
@@ -70,9 +78,9 @@ class Register extends Component {
       })
       .catch((error) => {
         this.setState({
-          user_validation: error.response.data.username || '',
-          password_validation: error.response.data.password || '',
-        })
+          user_validation: error.response.data.username || "",
+          password_validation: error.response.data.password || "",
+        });
       });
   };
 
