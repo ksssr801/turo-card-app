@@ -10,6 +10,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Bounce, ToastContainer } from "react-toastify";
+import GoogleSocialAuth from "../actions/GoogleSocialAuth";
+import LoginIcon from '@mui/icons-material/Login';
 
 class Login extends Component {
   componentDidMount() {
@@ -25,8 +27,8 @@ class Login extends Component {
         password: "",
       },
       user_validation: "",
-      password_validation: ""
-  };
+      password_validation: "",
+    };
   }
 
   alreadyLoggedInUser = () => {
@@ -65,9 +67,9 @@ class Login extends Component {
       })
       .catch((error) => {
         this.setState({
-          user_validation: error.response.data.username || '',
-          password_validation: error.response.data.password || '',
-        })
+          user_validation: error.response.data.username || "",
+          password_validation: error.response.data.password || "",
+        });
       });
   };
 
@@ -104,7 +106,7 @@ class Login extends Component {
               <form id="reg-form" className="row g-3">
                 <div className="col-md-12 mb-3">
                   <InputLabel id="demo-simple-select-label">
-                    Username*
+                    Email*
                   </InputLabel>
                   <TextField
                     required
@@ -114,10 +116,12 @@ class Login extends Component {
                     defaultValue={this.state.loginInfo.username}
                     variant="outlined"
                     onChange={this.handleInputChange}
-                    placeholder="Enter username"
+                    placeholder="Enter email"
                     size="small"
                   />
-                  { this.state.user_validation && (<i className="text-danger">{this.state.user_validation}</i>) }
+                  {this.state.user_validation && (
+                    <i className="text-danger">{this.state.user_validation}</i>
+                  )}
                 </div>
                 <div className="col-md-12 mb-3">
                   <InputLabel id="demo-simple-select-label">
@@ -135,7 +139,11 @@ class Login extends Component {
                     type="password"
                     size="small"
                   />
-                  { this.state.password_validation && (<i className="text-danger">{this.state.password_validation}</i>) }
+                  {this.state.password_validation && (
+                    <i className="text-danger">
+                      {this.state.password_validation}
+                    </i>
+                  )}
                 </div>
                 <div className="col-12 mb-3">
                   <Button
@@ -143,6 +151,7 @@ class Login extends Component {
                     variant="contained"
                     color="primary"
                     size="medium"
+                    startIcon={<LoginIcon />}
                   >
                     Sign In
                   </Button>
@@ -165,6 +174,9 @@ class Login extends Component {
                     closeOnClick
                     transition={Bounce}
                   />
+                </div>
+                <div className="col-12 mb-3">
+                  <GoogleSocialAuth />
                 </div>
               </form>
             </div>

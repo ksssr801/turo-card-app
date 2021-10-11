@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { Bounce, ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import GoogleSocialAuth from "../actions/GoogleSocialAuth";
 
 class Register extends Component {
   componentDidMount() {}
@@ -20,9 +21,9 @@ class Register extends Component {
     this.state = {
       registrationInfo: {
         username: "",
+        email: "",
         first_name: "",
         last_name: "",
-        email: "",
         password: "",
       },
       user_validation: "",
@@ -35,6 +36,7 @@ class Register extends Component {
     let name = event.target.name;
     let val = event.target.value;
     this.tempRegistrationInfo[name] = val;
+    if (name === 'email') this.tempRegistrationInfo['username'] = val;
     this.setState({
       registrationInfo: this.tempRegistrationInfo,
     });
@@ -117,17 +119,17 @@ class Register extends Component {
               <form id="reg-form" className="row g-3">
                 <div className="col-md-12 mb-3">
                   <InputLabel id="demo-simple-select-label">
-                    Username*
+                    Email*
                   </InputLabel>
                   <TextField
                     required
                     fullWidth
-                    name="username"
-                    id="inputUsername"
-                    defaultValue={this.state.registrationInfo.username}
+                    name="email"
+                    id="inputEmail"
+                    defaultValue={this.state.registrationInfo.email}
                     variant="outlined"
                     onChange={this.handleInputChange}
-                    placeholder="Enter username"
+                    placeholder="Enter email"
                     size="small"
                   />
                   {this.state.user_validation && (
@@ -161,19 +163,6 @@ class Register extends Component {
                     variant="outlined"
                     onChange={this.handleInputChange}
                     placeholder="Enter last name"
-                    size="small"
-                  />
-                </div>
-                <div className="col-md-12 mb-3">
-                  <InputLabel id="demo-simple-select-label">Email</InputLabel>
-                  <TextField
-                    fullWidth
-                    name="email"
-                    id="inputEmail"
-                    defaultValue={this.state.registrationInfo.email}
-                    variant="outlined"
-                    onChange={this.handleInputChange}
-                    placeholder="Enter email"
                     size="small"
                   />
                 </div>
@@ -228,6 +217,9 @@ class Register extends Component {
                     closeOnClick
                     transition={Bounce}
                   />
+                </div>
+                <div className="col-12 mb-3">
+                  <GoogleSocialAuth />                  
                 </div>
               </form>
             </div>
