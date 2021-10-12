@@ -1,6 +1,7 @@
 //Internal imports
 import "./App.css";
 import "./bootstrap.min.css";
+import "./common.css";
 
 //Library imports
 import React, { Component } from "react";

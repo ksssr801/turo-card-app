@@ -8,7 +8,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import Paper from "@material-ui/core/Paper";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ListIcon from "@material-ui/icons/List";
 import SwapHorizIcon from "@material-ui/icons/SwapHoriz";
@@ -22,6 +21,9 @@ import IconButton from "@material-ui/core/IconButton";
 import Avatar from "@material-ui/core/Avatar";
 import PersonIcon from "@material-ui/icons/Person";
 import AddIcon from "@material-ui/icons/Add";
+import Grid from "@mui/material/Grid";
+import InputLabel from "@material-ui/core/InputLabel";
+import Paper from "@mui/material/Paper";
 
 class Home extends Component {
   componentDidMount() {
@@ -38,9 +40,10 @@ class Home extends Component {
       isDashboard: true,
       isCollection: false,
       isRequest: false,
-      selectedTab: "one",
+      selectedTab: "allCards",
       anchorEl: null,
       isProfileMenuOpen: false,
+      userCards: [],
     };
   }
 
@@ -82,6 +85,7 @@ class Home extends Component {
       });
     }
     if (newValue === 1) {
+      this.getMyCollection();
       this.setState({
         isDashboard: false,
         isRequest: false,
@@ -97,22 +101,44 @@ class Home extends Component {
     }
   };
 
-  addCard = () => {
-    console.log("Add Card...")
-  }
-
   getDashboardData = () => {
     const token = localStorage.getItem("token");
     let headers = { Authorization: `Bearer ${token}` };
     axios
       .post("http://localhost:9090/dashboard/home/", {}, { headers })
       .then((res) => {
-        console.log("res : ", res);
+        // console.log("res : ", res);
         if (res.status === 200) {
           this.setState({
             isAuthorized: true,
             loginMessage: "Welcome, " + res.data.username,
             currentUser: res.data.username,
+            userCards: res.data.userCardDetailsList,
+          });
+        } else {
+          this.setState({
+            loginMessage: "401 Unauthorized",
+          });
+        }
+      })
+      .catch((error) => {
+        // console.log("error: ", error.response.data);
+      });
+  };
+
+  getMyCollection = () => {
+    const token = localStorage.getItem("token");
+    let headers = { Authorization: `Bearer ${token}` };
+    axios
+      .get("http://localhost:9090/dashboard/my-collection/", { headers })
+      .then((res) => {
+        // console.log("res : ", res);
+        if (res.status === 200) {
+          this.setState({
+            isAuthorized: true,
+            loginMessage: "Welcome, " + res.data.username,
+            currentUser: res.data.username,
+            userCards: res.data.myCardCollection,
           });
         } else {
           this.setState({
@@ -134,17 +160,17 @@ class Home extends Component {
               Turo Card
             </Typography>
             <br />
-            <Button color="inherit" onClick={this.addCard}>
+            <Button color="inherit" variant="outlined" onClick={this.addCard}>
               <Link
                 to="/add-card"
                 style={{ textDecoration: "None", color: "#fff" }}
               >
-                <AddIcon />&nbsp;Card
+                <AddIcon />
+                &nbsp;Card
               </Link>
             </Button>
             <br />
-            &nbsp;
-            <Tooltip title={this.state.currentUser}>
+            <Tooltip className="ml-2" title={this.state.currentUser}>
               <IconButton
                 onClick={this.openProfileMenu}
                 size="small"
@@ -185,20 +211,13 @@ class Home extends Component {
         </AppBar>
         <br />
         <Typography
-          variant="h4"
+          variant="h5"
           className="text-center"
           style={{ flexGrow: 1 }}
         >
           {this.state.loginMessage}
         </Typography>
 
-        <Typography
-          variant="h6"
-          className="text-center"
-          style={{ flexGrow: 1 }}
-        >
-          Cards Dashboard
-        </Typography>
         <br />
         <div className="p-2">
           <div className="card">
@@ -212,12 +231,59 @@ class Home extends Component {
                     indicatorColor="primary"
                     centered
                   >
-                    <Tab value="one" label="All Cards" />
-                    <Tab value="two" label="Top Users" />
+                    <Tab value="allCards" label="All Cards" />
+                    <Tab value="topUsers" label="Top Users" />
                   </Tabs>
                 </Box>
               )}
-              <div className="row g-3"></div>
+              {((this.state.isDashboard && this.state.selectedTab === 'allCards') || (this.state.isCollection)) && (
+                <div className="col-md-12 mb-3">
+                  {this.state.userCards.map((obj) => (
+                    <div>
+                      <InputLabel
+                        id="demo-simple-select-label"
+                        className="mt-4"
+                      >
+                        {this.state.isDashboard ? obj.user + " (" + obj.cards.length + ")" : "My Collection (" + obj.cards.length + ")"}
+                      </InputLabel>
+                      <div
+                        className="p-2"
+                        style={{ backgroundColor: "#E8E8E8" }}
+                      >
+                        <Grid sx={{ flexGrow: 1 }} container>
+                          <Grid item xs={12}>
+                            <Grid container spacing={1.5}>
+                              {obj.cards.map((value) => (
+                                <Grid key={value.card_id} item>
+                                  <Paper
+                                    sx={{ height: 280, width: 210 }}
+                                    className={
+                                      "p-2 " + value.extra_params.card_css
+                                    }
+                                  >
+                                    <div className="card-content-centered">
+                                      <img
+                                        src={value.extra_params.default_img}
+                                        alt="Avatar"
+                                      />
+                                      <div className="h5 mt-1 text-bold text-white">
+                                        {value.name}
+                                      </div>
+                                      <div className="body2 text-white">
+                                        {value.description}
+                                      </div>
+                                    </div>
+                                  </Paper>
+                                </Grid>
+                              ))}
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

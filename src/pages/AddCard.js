@@ -13,7 +13,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
-
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
 class AddCard extends Component {
   componentDidMount() {}
   constructor(props) {
@@ -25,6 +27,46 @@ class AddCard extends Component {
         card_descr: "",
       },
       cardDrawer: false,
+      selectedCard: {
+        card_css: "",
+        default_img:
+          "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+      },
+      isCardSelected: false,
+      presetCards: [
+        {
+          id: 1,
+          card_css: "bg-info",
+          default_img:
+            "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+          default_name: "Default Name",
+          default_descr: "Default Description",
+        },
+        {
+          id: 2,
+          card_css: "bg-success",
+          default_img:
+            "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+          default_name: "Default Name",
+          default_descr: "Default Description",
+        },
+        {
+          id: 3,
+          card_css: "bg-dark",
+          default_img:
+            "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+          default_name: "Default Name",
+          default_descr: "Default Description",
+        },
+        {
+          id: 4,
+          card_css: "bg-danger",
+          default_img:
+            "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+          default_name: "Default Name",
+          default_descr: "Default Description",
+        },
+      ],
     };
   }
 
@@ -44,11 +86,46 @@ class AddCard extends Component {
     });
   };
 
+  getSelectedCard = (selected) => {
+    let ckName = document.getElementsByName("card-select");
+    let checkedEl = document.getElementById("card-chkbox-" + selected);
+    if (checkedEl.checked) {
+      for (let i = 0; i < ckName.length; i++) {
+        if (!ckName[i].checked) {
+          ckName[i].disabled = true;
+        } else {
+          ckName[i].disabled = false;
+        }
+      }
+    } else {
+      for (let i = 0; i < ckName.length; i++) {
+        ckName[i].disabled = false;
+      }
+    }
+
+    for (let idx in this.state.presetCards) {
+      if (this.state.presetCards[idx].id === selected) {
+        this.setState({
+          selectedCard: this.state.presetCards[idx],
+          isCardSelected: true,
+        });
+        break;
+      }
+    }
+    this.toggleCard(false);
+  };
+
   submitHandler = (event) => {
+    console.log(this.state)
+
+    let cardDetails = {
+        cardInfo: this.state.cardInfo,
+        selectedCard: this.state.selectedCard,
+    }
     const token = localStorage.getItem("token");
     let headers = { Authorization: `Bearer ${token}` };
     axios
-      .post("http://localhost:9090/dashboard/add-card/", this.state.cardInfo, {
+      .post("http://localhost:9090/dashboard/add-card/", cardDetails, {
         headers,
       })
       .then((res) => {
@@ -88,7 +165,7 @@ class AddCard extends Component {
               Turo Card
             </Typography>
             <br />
-            <Button color="inherit">
+            <Button color="inherit" variant="outlined">
               <Link
                 to="/home"
                 style={{ textDecoration: "None", color: "#fff" }}
@@ -100,7 +177,7 @@ class AddCard extends Component {
         </AppBar>
         <br />
         <Typography
-          variant="h6"
+          variant="h5"
           className="text-center"
           style={{ flexGrow: 1 }}
         >
@@ -110,11 +187,16 @@ class AddCard extends Component {
         <div className="p-2">
           <div className="card">
             <div className="card-body">
-              <span className="pull-right">
-                <Button onClick={() => this.toggleCard(true)}>
-                  &nbsp;Filter
-                </Button>
-              </span>
+              {/* <div className="pull-right mb-2"> */}
+              <Button
+                className="mb-3"
+                color="primary"
+                variant="outlined"
+                onClick={() => this.toggleCard(true)}
+              >
+                Select Card
+              </Button>
+              {/* </div> */}
               <br />
               <Drawer
                 anchor="bottom"
@@ -125,7 +207,46 @@ class AddCard extends Component {
                   <CloseIcon />
                   &nbsp;Close
                 </Button>
-                <br />
+                <div className="p-3" style={{ backgroundColor: "#E8E8E8" }}>
+                  <Grid sx={{ flexGrow: 1 }} container>
+                    <Grid item xs={12}>
+                      <Grid justifyContent="center" container spacing={1.5}>
+                        {this.state.presetCards.map((value) => (
+                          <Grid key={value.id} item>
+                            <Paper
+                              sx={{ height: 280, width: 210 }}
+                              className={"cursor-pointer " + value.card_css}
+                            >
+                              <div
+                                id="cbSelectCard"
+                                className="pull-right pr-half pt-half"
+                              >
+                                <Checkbox
+                                  id={"card-chkbox-" + value.id}
+                                  name="card-select"
+                                  aria-label="Select card"
+                                  color="default"
+                                  onChange={() =>
+                                    this.getSelectedCard(value.id)
+                                  }
+                                />
+                              </div>
+                              <div class="card-content-centered">
+                                <img src={value.default_img} alt="Avatar" />
+                                <div className="h5 mt-1 text-bold text-white">
+                                  {value.default_name}
+                                </div>
+                                <div className="body2 text-white">
+                                  {value.default_descr}
+                                </div>
+                              </div>
+                            </Paper>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </div>
               </Drawer>
 
               <form id="card-info-form" className="row g-3">
@@ -150,7 +271,7 @@ class AddCard extends Component {
                   <TextField
                     required
                     fullWidth
-                    name="description"
+                    name="card_descr"
                     id="inputDescription"
                     defaultValue={this.state.cardInfo.card_descr}
                     variant="outlined"
@@ -159,6 +280,38 @@ class AddCard extends Component {
                     size="small"
                   />
                 </div>
+                {this.state.isCardSelected && (
+                  <div className="col-md-12 mb-3">
+                    <InputLabel id="demo-simple-select-label" className="mt-2">
+                      Preview
+                    </InputLabel>
+                    <div className="p-2" style={{ backgroundColor: "#E8E8E8" }}>
+                      <Grid justifyContent="center" container spacing={1}>
+                        <Grid item>
+                          <Paper
+                            sx={{ height: 320, width: 250 }}
+                            className={this.state.selectedCard.card_css}
+                          >
+                            <div class="card-content-centered p-1">
+                              <img
+                                src={this.state.selectedCard.default_img}
+                                alt="Avatar"
+                              />
+                              <div className="h5 mt-1 text-bold text-white">
+                                {this.state.cardInfo.card_name ||
+                                  "Default Name"}
+                              </div>
+                              <div className="body2 text-white">
+                                {this.state.cardInfo.card_descr ||
+                                  "Default Description"}
+                              </div>
+                            </div>
+                          </Paper>
+                        </Grid>
+                      </Grid>
+                    </div>
+                  </div>
+                )}
                 <div className="col-12 mb-3">
                   <Button
                     onClick={this.submitHandler}
