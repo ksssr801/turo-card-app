@@ -40,6 +40,7 @@ class Home extends Component {
       isDashboard: true,
       isCollection: false,
       isRequest: false,
+      moduleHeading: "Dashboard",
       selectedTab: "allCards",
       anchorEl: null,
       isProfileMenuOpen: false,
@@ -82,6 +83,7 @@ class Home extends Component {
         isDashboard: true,
         isRequest: false,
         isCollection: false,
+        moduleHeading: "Dashboard",
       });
     }
     if (newValue === 1) {
@@ -90,6 +92,7 @@ class Home extends Component {
         isDashboard: false,
         isRequest: false,
         isCollection: true,
+        moduleHeading: "My Collection"
       });
     }
     if (newValue === 2) {
@@ -97,6 +100,7 @@ class Home extends Component {
         isDashboard: false,
         isRequest: true,
         isCollection: false,
+        moduleHeading: "Swap Requests"
       });
     }
   };
@@ -122,7 +126,13 @@ class Home extends Component {
         }
       })
       .catch((error) => {
-        // console.log("error: ", error.response.data);
+        if (
+          error.response.data &&
+          error.response.data.code === "token_not_valid"
+        ) {
+          window.location.href = "/403";
+          localStorage.removeItem("token");
+        }
       });
   };
 
@@ -147,7 +157,14 @@ class Home extends Component {
         }
       })
       .catch((error) => {
-        // console.log("error: ", error.response.data);
+        console.log("error: ", error.response.data);
+        if (
+          error.response.data &&
+          error.response.data.code === "token_not_valid"
+        ) {
+          window.location.href = "/403";
+          localStorage.removeItem("token");
+        }
       });
   };
 
@@ -217,7 +234,14 @@ class Home extends Component {
         >
           {this.state.loginMessage}
         </Typography>
-
+        <br />
+        <Typography
+          variant="subtitle1"
+          className="text-center"
+          style={{ flexGrow: 1 }}
+        >
+          {this.state.moduleHeading}
+        </Typography>
         <br />
         <div className="p-2">
           <div className="card">
@@ -236,53 +260,64 @@ class Home extends Component {
                   </Tabs>
                 </Box>
               )}
-              {((this.state.isDashboard && this.state.selectedTab === 'allCards') || (this.state.isCollection)) && (
-                <div className="col-md-12 mb-3">
-                  {this.state.userCards.map((obj) => (
-                    <div>
-                      <InputLabel
-                        id="demo-simple-select-label"
-                        className="mt-4"
-                      >
-                        {this.state.isDashboard ? obj.user + " (" + obj.cards.length + ")" : "My Collection (" + obj.cards.length + ")"}
-                      </InputLabel>
-                      <div
-                        className="p-2"
-                        style={{ backgroundColor: "#E8E8E8" }}
-                      >
-                        <Grid sx={{ flexGrow: 1 }} container>
-                          <Grid item xs={12}>
-                            <Grid container spacing={1.5}>
-                              {obj.cards.map((value) => (
-                                <Grid key={value.card_id} item>
-                                  <Paper
-                                    sx={{ height: 280, width: 210 }}
-                                    className={
-                                      "p-2 " + value.extra_params.card_css
-                                    }
-                                  >
-                                    <div className="card-content-centered">
-                                      <img
-                                        src={value.extra_params.default_img}
-                                        alt="Avatar"
-                                      />
-                                      <div className="h5 mt-1 text-bold text-white">
-                                        {value.name}
-                                      </div>
-                                      <div className="body2 text-white">
-                                        {value.description}
-                                      </div>
-                                    </div>
-                                  </Paper>
+              {this.state.userCards.length > 0 && (
+                <div>
+                  {((this.state.isDashboard &&
+                    this.state.selectedTab === "allCards") ||
+                    this.state.isCollection) && (
+                    <div className="col-md-12 mb-3">
+                      {this.state.userCards.map((obj) => (
+                        <div>
+                          <InputLabel
+                            id="demo-simple-select-label"
+                            className="mt-4"
+                          >
+                            {this.state.isDashboard
+                              ? obj.user + " (" + obj.cards.length + ")"
+                              : "My Collection (" + obj.cards.length + ")"}
+                          </InputLabel>
+                          <div
+                            className="p-2"
+                            style={{ backgroundColor: "#E8E8E8" }}
+                          >
+                            <Grid sx={{ flexGrow: 1 }} container>
+                              <Grid item xs={12}>
+                                <Grid container spacing={1.5}>
+                                  {obj.cards.map((value) => (
+                                    <Grid key={value.card_id} item>
+                                      <Paper
+                                        sx={{ height: 280, width: 210 }}
+                                        className={
+                                          "p-2 " + value.extra_params.card_css
+                                        }
+                                      >
+                                        <div className="card-content-centered">
+                                          <img
+                                            src={value.extra_params.default_img}
+                                            alt="Avatar"
+                                          />
+                                          <div className="h5 mt-1 text-bold text-white">
+                                            {value.name}
+                                          </div>
+                                          <div className="body2 text-white">
+                                            {value.description}
+                                          </div>
+                                        </div>
+                                      </Paper>
+                                    </Grid>
+                                  ))}
                                 </Grid>
-                              ))}
+                              </Grid>
                             </Grid>
-                          </Grid>
-                        </Grid>
-                      </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
+              )}
+              {!this.state.userCards.length && (
+                <div className="text-center mt-5">No Data Available</div>
               )}
             </div>
           </div>

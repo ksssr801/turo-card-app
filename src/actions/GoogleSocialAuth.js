@@ -5,12 +5,12 @@ import axios from "axios";
 class GoogleSocialAuth extends Component {
   render() {
     const googleResponse = (response) => {
-      console.log("response : ", response);
+      // console.log("response : ", response);
       if ("accessToken" in response)
         localStorage.setItem("googleAccessToken", response.accessToken);
-      else console.log("response : ", localStorage);
+      // else console.log("response : ", localStorage);
       const googleToken = localStorage.getItem("googleAccessToken");
-      console.log("googleToken : ", googleToken);
+      // console.log("googleToken : ", googleToken);
 
       //   const googleLogin = async (accesstoken) => {
       //     let res = await axios.post("http://localhost:9090/rest-auth/google/", {
@@ -22,13 +22,13 @@ class GoogleSocialAuth extends Component {
       //   let resp = googleLogin(response.accessToken)
       //   console.log("resp : ", resp)
       let headers = { access_token: `${googleToken}` };
-      console.log("headers : ", headers);
+      // console.log("headers : ", headers);
       axios
         .post("http://localhost:9090/rest-auth/google/", {
           access_token: googleToken,
         })
         .then((res) => {
-          console.log("res : ", res);
+          // console.log("res : ", res);
           if ("refresh_token" in res.data)
             localStorage.setItem("token", res.data.refresh_token);
 

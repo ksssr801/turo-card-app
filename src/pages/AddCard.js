@@ -16,6 +16,9 @@ import CloseIcon from "@material-ui/icons/Close";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
+import Switch from "@mui/material/Switch";
+import defaultProfile from "../assets/default_profile.jpg";
+
 class AddCard extends Component {
   componentDidMount() {}
   constructor(props) {
@@ -26,43 +29,39 @@ class AddCard extends Component {
         card_name: "",
         card_descr: "",
       },
+      cardPublicVisibility: true,
       cardDrawer: false,
       selectedCard: {
         card_css: "",
-        default_img:
-          "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+        default_img: defaultProfile,
       },
       isCardSelected: false,
       presetCards: [
         {
           id: 1,
           card_css: "bg-info",
-          default_img:
-            "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+          default_img: defaultProfile,
           default_name: "Default Name",
           default_descr: "Default Description",
         },
         {
           id: 2,
           card_css: "bg-success",
-          default_img:
-            "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+          default_img: defaultProfile,
           default_name: "Default Name",
           default_descr: "Default Description",
         },
         {
           id: 3,
           card_css: "bg-dark",
-          default_img:
-            "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+          default_img: defaultProfile,
           default_name: "Default Name",
           default_descr: "Default Description",
         },
         {
           id: 4,
           card_css: "bg-danger",
-          default_img:
-            "https://lh3.googleusercontent.com/a-/AOh14GhYYpMzvi_km7nzXzE4KY0QZgb5srqKCy-d_gLdmg=s96-c",
+          default_img: defaultProfile,
           default_name: "Default Name",
           default_descr: "Default Description",
         },
@@ -115,13 +114,17 @@ class AddCard extends Component {
     this.toggleCard(false);
   };
 
+  setPublicVisibility = (event) => {
+    this.setState({
+      cardPublicVisibility: event.target.checked,
+    });
+  };
   submitHandler = (event) => {
-    console.log(this.state)
-
     let cardDetails = {
-        cardInfo: this.state.cardInfo,
-        selectedCard: this.state.selectedCard,
-    }
+      cardInfo: this.state.cardInfo,
+      selectedCard: this.state.selectedCard,
+      cardPublicVisibility: this.state.cardPublicVisibility,
+    };
     const token = localStorage.getItem("token");
     let headers = { Authorization: `Bearer ${token}` };
     axios
@@ -153,6 +156,13 @@ class AddCard extends Component {
       })
       .catch((error) => {
         console.log("error : ", error);
+        if (
+          error.response.data &&
+          error.response.data.code === "token_not_valid"
+        ) {
+          window.location.href = "/403";
+          localStorage.removeItem("token");
+        }
       });
   };
 
@@ -208,6 +218,11 @@ class AddCard extends Component {
                   &nbsp;Close
                 </Button>
                 <div className="p-3" style={{ backgroundColor: "#E8E8E8" }}>
+                  <span className="h6">
+                    <center className="pb-1">
+                      Pick one to get the preview.
+                    </center>
+                  </span>
                   <Grid sx={{ flexGrow: 1 }} container>
                     <Grid item xs={12}>
                       <Grid justifyContent="center" container spacing={1.5}>
@@ -265,6 +280,16 @@ class AddCard extends Component {
                   />
                 </div>
                 <div className="col-md-6 mb-3">
+                  <InputLabel id="demo-simple-select-label">
+                    Public Visibility
+                  </InputLabel>
+                  <Switch
+                    aria-label="cardPublicVisibilitySw"
+                    checked={this.state.cardPublicVisibility}
+                    onChange={this.setPublicVisibility}
+                  />
+                </div>
+                <div className="col-md-12 mb-3">
                   <InputLabel id="demo-simple-select-label">
                     Description*
                   </InputLabel>

@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import AddCard from "./pages/AddCard";
+import Unauthorized from "./pages/Unauthorized";
 
 export default class App extends Component {
   render() {
@@ -24,6 +25,7 @@ export default class App extends Component {
                 <Route path="/login" component={Login} />
                 <Route path="/home" component={Home} />
                 <Route path="/add-card" component={AddCard} />
+                <Route path="/403" component={Unauthorized} />
                 <Route component={Default} />
               </Switch>
             </BrowserRouter>
