@@ -24,6 +24,18 @@ import AddIcon from "@material-ui/icons/Add";
 import Grid from "@mui/material/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
 import Paper from "@mui/material/Paper";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { Divider } from "@material-ui/core";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
+import Drawer from "@material-ui/core/Drawer";
+import CloseIcon from "@material-ui/icons/Close";
+import TextField from "@material-ui/core/TextField";
+import SaveIcon from "@material-ui/icons/Save";
+import AddCommentIcon from "@mui/icons-material/AddComment";
 
 class Home extends Component {
   componentDidMount() {
@@ -45,6 +57,11 @@ class Home extends Component {
       anchorEl: null,
       isProfileMenuOpen: false,
       userCards: [],
+      commentSection: false,
+      commentForCardName: "",
+      commentForCardId: undefined,
+      card_comment: "",
+      commentsList: [],
     };
   }
 
@@ -73,6 +90,20 @@ class Home extends Component {
     });
   };
 
+  handleInputChange = (event) => {
+    this.setState({
+      card_comment: event.target.value,
+    });
+  };
+
+  toggleCommentSection = (action, card, cardId) => {
+    this.setState({
+      commentSection: action,
+      commentForCardName: card,
+      commentForCardId: cardId
+    });
+  };
+
   navigationBarHandler = (event, newValue) => {
     this.setState({
       navValue: newValue,
@@ -92,7 +123,7 @@ class Home extends Component {
         isDashboard: false,
         isRequest: false,
         isCollection: true,
-        moduleHeading: "My Collection"
+        moduleHeading: "My Collection",
       });
     }
     if (newValue === 2) {
@@ -100,7 +131,7 @@ class Home extends Component {
         isDashboard: false,
         isRequest: true,
         isCollection: false,
-        moduleHeading: "Swap Requests"
+        moduleHeading: "Swap Requests",
       });
     }
   };
@@ -155,6 +186,100 @@ class Home extends Component {
             loginMessage: "401 Unauthorized",
           });
         }
+      })
+      .catch((error) => {
+        console.log("error: ", error.response.data);
+        if (
+          error.response.data &&
+          error.response.data.code === "token_not_valid"
+        ) {
+          window.location.href = "/403";
+          localStorage.removeItem("token");
+        }
+      });
+  };
+
+  likeCard = (cardId) => {
+    let cardObj = {
+      cardId: cardId,
+    };
+    const token = localStorage.getItem("token");
+    let headers = { Authorization: `Bearer ${token}` };
+    axios
+      .post("http://localhost:9090/dashboard/like-card/", cardObj, { headers })
+      .then((res) => {
+        if (res.status === 200) {
+          this.getDashboardData();
+        } else {
+        }
+      })
+      .catch((error) => {
+        console.log("error: ", error.response.data);
+        if (
+          error.response.data &&
+          error.response.data.code === "token_not_valid"
+        ) {
+          window.location.href = "/403";
+          localStorage.removeItem("token");
+        }
+      });
+  };
+
+  dislikeCard = (cardId) => {
+    let cardObj = {
+      cardId: cardId,
+    };
+    const token = localStorage.getItem("token");
+    let headers = { Authorization: `Bearer ${token}` };
+    axios
+      .post("http://localhost:9090/dashboard/dislike-card/", cardObj, {
+        headers,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          this.getDashboardData();
+        } else {
+        }
+      })
+      .catch((error) => {
+        console.log("error: ", error.response.data);
+        if (
+          error.response.data &&
+          error.response.data.code === "token_not_valid"
+        ) {
+          window.location.href = "/403";
+          localStorage.removeItem("token");
+        }
+      });
+  };
+
+  commentOnCard = (cardId) => {
+    console.log("cardId : ", cardId);
+    let cardObj = {
+      cardId: cardId,
+      comment: this.state.card_comment,
+    };
+    console.log("cardObj : ", cardObj);
+    const token = localStorage.getItem("token");
+    let headers = { Authorization: `Bearer ${token}` };
+    axios
+      .post("http://localhost:9090/dashboard/comment-on-card/", cardObj, {
+        headers,
+      })
+      .then((res) => {
+        console.log("res : ", res);
+        // if (res.status === 200) {
+        //   this.setState({
+        //     isAuthorized: true,
+        //     loginMessage: "Welcome, " + res.data.username,
+        //     currentUser: res.data.username,
+        //     userCards: res.data.myCardCollection,
+        //   });
+        // } else {
+        //   this.setState({
+        //     loginMessage: "401 Unauthorized",
+        //   });
+        // }
       })
       .catch((error) => {
         console.log("error: ", error.response.data);
@@ -285,25 +410,192 @@ class Home extends Component {
                                 <Grid container spacing={1.5}>
                                   {obj.cards.map((value) => (
                                     <Grid key={value.card_id} item>
-                                      <Paper
+                                      <Card
                                         sx={{ height: 280, width: 210 }}
-                                        className={
-                                          "p-2 " + value.extra_params.card_css
-                                        }
+                                        className={value.extra_params.card_css}
                                       >
-                                        <div className="card-content-centered">
-                                          <img
-                                            src={value.extra_params.default_img}
-                                            alt="Avatar"
-                                          />
-                                          <div className="h5 mt-1 text-bold text-white">
-                                            {value.name}
+                                        <CardContent>
+                                          <div className="card-content-centered p-2">
+                                            <div className="img-wrapper">
+                                              <img
+                                                className="profile-image"
+                                                src={
+                                                  value.extra_params.default_img
+                                                }
+                                                alt="Avatar"
+                                              />
+                                              {!this.state.isCollection && (
+                                                <div className="middle">
+                                                  <IconButton aria-label="comment">
+                                                    <SwapHorizIcon fontSize="large" />
+                                                  </IconButton>
+                                                </div>
+                                              )}
+                                            </div>
+                                            <div className="h5 mt-1 text-bold text-white">
+                                              {value.name}
+                                            </div>
+                                            <div className="body2 text-white">
+                                              {value.description}
+                                            </div>
                                           </div>
-                                          <div className="body2 text-white">
-                                            {value.description}
+                                        </CardContent>
+                                        {!this.state.isCollection && (
+                                          <div>
+                                            <Divider />
+                                            <CardActions className="bg-light">
+                                              <IconButton aria-label="like">
+                                                {!value.isLiked && (
+                                                  <FavoriteBorderOutlinedIcon
+                                                    onClick={() =>
+                                                      this.likeCard(
+                                                        value.card_id
+                                                      )
+                                                    }
+                                                  />
+                                                )}
+                                                {value.isLiked && (
+                                                  <FavoriteIcon
+                                                    color="error"
+                                                    onClick={() =>
+                                                      this.dislikeCard(
+                                                        value.card_id
+                                                      )
+                                                    }
+                                                  />
+                                                )}
+                                              </IconButton>
+                                              <span className="caption">
+                                                {value.likes_count}
+                                              </span>
+                                              <IconButton aria-label="comment">
+                                                <ChatBubbleOutlineOutlinedIcon
+                                                  onClick={() =>
+                                                    this.toggleCommentSection(
+                                                      true,
+                                                      value.name,
+                                                      value.card_id
+                                                    )
+                                                  }
+                                                />
+                                              </IconButton>
+                                              <Drawer
+                                                anchor="bottom"
+                                                open={this.state.commentSection}
+                                                onClose={() =>
+                                                  this.toggleCommentSection(
+                                                    false,
+                                                    value.name
+                                                  )
+                                                }
+                                              >
+                                                <Button
+                                                  onClick={() =>
+                                                    this.toggleCommentSection(
+                                                      false,
+                                                      value.name
+                                                    )
+                                                  }
+                                                >
+                                                  <CloseIcon />
+                                                  &nbsp;Close
+                                                </Button>
+                                                <div className="p-3">
+                                                  <span className="h6">
+                                                    <center className="pb-1">
+                                                      {
+                                                        this.state
+                                                          .commentForCardName
+                                                      }
+                                                    </center>
+                                                  </span>
+                                                </div>
+                                                <div className="col-md-12 mb-3">
+                                                  <TextField
+                                                    fullWidth
+                                                    multiline
+                                                    rows={2}
+                                                    rowsMax={4}
+                                                    name="card_comment"
+                                                    id="inputCardComment"
+                                                    defaultValue={
+                                                      this.state.card_comment
+                                                    }
+                                                    variant="outlined"
+                                                    onChange={
+                                                      this.handleInputChange
+                                                    }
+                                                    placeholder="Write your comment here..."
+                                                    size="small"
+                                                  />
+                                                </div>
+                                                <div className="col-12 mb-3">
+                                                  <Button
+                                                    className="mb-2"
+                                                    onClick={() =>
+                                                      this.commentOnCard(
+                                                        this.state
+                                                          .commentForCardId
+                                                      )
+                                                    }
+                                                    variant="contained"
+                                                    color="primary"
+                                                    size="medium"
+                                                    startIcon={
+                                                      <AddCommentIcon />
+                                                    }
+                                                  >
+                                                    Comment
+                                                  </Button>
+                                                  <Divider />
+                                                </div>
+                                                <div className="col-12 mb-3">
+                                                  {this.state.commentsList.map(
+                                                    (val) => (
+                                                      <div>
+                                                        <div className="mt-2">
+                                                          <Typography
+                                                            display="inline"
+                                                            variant="subtitle2"
+                                                            style={{
+                                                              flexGrow: 1,
+                                                            }}
+                                                          >
+                                                            <b>{val.user}:</b>
+                                                          </Typography>
+                                                          &nbsp;
+                                                          <Typography
+                                                            display="inline"
+                                                            variant="body2"
+                                                            style={{
+                                                              flexGrow: 1,
+                                                            }}
+                                                          >
+                                                            <i>{val.comment}</i>
+                                                          </Typography>
+                                                        </div>
+                                                        <div className="mb-2">
+                                                          <Typography
+                                                            className="pull-right"
+                                                            variant="caption"
+                                                            style={{
+                                                              flexGrow: 1,
+                                                            }}
+                                                          >
+                                                            {val.timeAgo}
+                                                          </Typography>
+                                                        </div>
+                                                        <Divider />
+                                                      </div>
+                                                    )
+                                                  )}
+                                                </div>
+                                              </Drawer>
+                                              <span className="caption">5</span>
+                                            </CardActions>
                                           </div>
-                                        </div>
-                                      </Paper>
+                                        )}
+                                      </Card>
                                     </Grid>
                                   ))}
                                 </Grid>

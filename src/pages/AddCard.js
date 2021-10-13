@@ -246,7 +246,7 @@ class AddCard extends Component {
                                   }
                                 />
                               </div>
-                              <div class="card-content-centered">
+                              <div className="card-content-centered">
                                 <img src={value.default_img} alt="Avatar" />
                                 <div className="h5 mt-1 text-bold text-white">
                                   {value.default_name}
@@ -317,8 +317,9 @@ class AddCard extends Component {
                             sx={{ height: 320, width: 250 }}
                             className={this.state.selectedCard.card_css}
                           >
-                            <div class="card-content-centered p-1">
+                            <div className="card-content-centered p-1">
                               <img
+                                className="mt-5"
                                 src={this.state.selectedCard.default_img}
                                 alt="Avatar"
                               />
