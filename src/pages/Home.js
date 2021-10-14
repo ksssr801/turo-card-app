@@ -34,7 +34,6 @@ import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutline
 import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
 import TextField from "@material-ui/core/TextField";
-import SaveIcon from "@material-ui/icons/Save";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 
 class Home extends Component {
@@ -62,6 +61,8 @@ class Home extends Component {
       commentForCardId: undefined,
       card_comment: "",
       commentsList: [],
+      beepSound:
+        "data:audio/wav;base64,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qJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=",
     };
   }
 
@@ -103,7 +104,7 @@ class Home extends Component {
       commentForCardId: cardId,
     });
     if (action) this.getCardComments(cardId);
-    else this.getDashboardData()
+    else this.getDashboardData();
   };
 
   getCardComments = (cardId) => {
@@ -294,8 +295,8 @@ class Home extends Component {
         if (res.status === 200) {
           this.getCardComments(cardId);
           this.setState({
-            card_comment: ''
-          })
+            card_comment: "",
+          });
         } else {
         }
       })
@@ -309,6 +310,17 @@ class Home extends Component {
           localStorage.removeItem("token");
         }
       });
+  };
+
+  playSound = (soundobj) => {
+    var thissound = document.getElementById(soundobj);
+    thissound.play();
+  };
+
+  stopSound = (soundobj) => {
+    var thissound = document.getElementById(soundobj);
+    thissound.pause();
+    thissound.currentTime = 0;
   };
 
   render() {
@@ -428,194 +440,224 @@ class Home extends Component {
                                 <Grid container spacing={1.5}>
                                   {obj.cards.map((value) => (
                                     <Grid key={value.card_id} item>
-                                      <Card
-                                        sx={{ height: 280, width: 210 }}
-                                        className={value.extra_params.card_css}
-                                      >
-                                        <CardContent style={{ height: "29vh", overflowY: "auto" }}>
-                                          <div className="card-content-centered p-2">
-                                            <div className="img-wrapper">
-                                              <img
-                                                className="profile-image"
-                                                src={
-                                                  value.card_image || value.extra_params.default_img
-                                                }
-                                                alt="Avatar"
-                                              />
-                                              {!this.state.isCollection && (
-                                                <div className="middle">
-                                                  <IconButton aria-label="comment">
-                                                    <SwapHorizIcon fontSize="large" />
-                                                  </IconButton>
-                                                </div>
-                                              )}
-                                            </div>
-                                            <div className="h5 mt-1 text-bold text-white">
-                                              {value.name}
-                                            </div>
-                                            <div className="body2 text-white">
-                                              {value.description}
-                                            </div>
-                                          </div>
-                                        </CardContent>
-                                        {!this.state.isCollection && (
-                                          <div>
-                                            <Divider />
-                                            <CardActions className="bg-light">
-                                              <IconButton aria-label="like">
-                                                {!value.isLiked && (
-                                                  <FavoriteBorderOutlinedIcon
-                                                    onClick={() =>
-                                                      this.likeCard(
-                                                        value.card_id
-                                                      )
-                                                    }
-                                                  />
-                                                )}
-                                                {value.isLiked && (
-                                                  <FavoriteIcon
-                                                    color="error"
-                                                    onClick={() =>
-                                                      this.dislikeCard(
-                                                        value.card_id
-                                                      )
-                                                    }
-                                                  />
-                                                )}
-                                              </IconButton>
-                                              <span className="caption">
-                                                {value.likes_count}
-                                              </span>
-                                              <IconButton aria-label="comment">
-                                                <ChatBubbleOutlineOutlinedIcon
-                                                  onClick={() =>
-                                                    this.toggleCommentSection(
-                                                      true,
-                                                      value.name,
-                                                      value.card_id
-                                                    )
+                                      <audio
+                                        id="mySound"
+                                        src={this.state.beepSound}
+                                      />
+                                      <div>
+                                        <Card
+                                          sx={{ height: 280, width: 210 }}
+                                          className={
+                                            value.extra_params.card_css
+                                          }
+                                        >
+                                          <CardContent
+                                            style={
+                                              !this.state.isCollection
+                                                ? {
+                                                    height: "29vh",
+                                                    overflowY: "auto",
                                                   }
+                                                : {}
+                                            }
+                                          >
+                                            <div className="card-content-centered p-2">
+                                              <div className="img-wrapper">
+                                                <img
+                                                  className="profile-image"
+                                                  src={
+                                                    value.card_image ||
+                                                    value.extra_params
+                                                      .default_img
+                                                  }
+                                                  alt="Avatar"
                                                 />
-                                              </IconButton>
-                                              <Drawer
-                                                anchor="bottom"
-                                                open={this.state.commentSection}
-                                                onClose={() =>
-                                                  this.toggleCommentSection(
-                                                    false,
-                                                    value.name
-                                                  )
+                                              </div>
+                                              <div
+                                                onMouseOver={() =>
+                                                  this.playSound("mySound")
                                                 }
+                                                onMouseOut={() =>
+                                                  this.stopSound("mySound")
+                                                }
+                                                className="h5 mt-1 text-bold text-white"
                                               >
-                                                <Button
-                                                  onClick={() =>
+                                                {value.name}
+                                              </div>
+                                              <div className="body2 text-white">
+                                                {value.description}
+                                              </div>
+                                            </div>
+                                          </CardContent>
+                                          {!this.state.isCollection && (
+                                            <div>
+                                              <Divider />
+                                              <CardActions className="bg-light">
+                                                <IconButton aria-label="like">
+                                                  {!value.isLiked && (
+                                                    <FavoriteBorderOutlinedIcon
+                                                      onClick={() =>
+                                                        this.likeCard(
+                                                          value.card_id
+                                                        )
+                                                      }
+                                                    />
+                                                  )}
+                                                  {value.isLiked && (
+                                                    <FavoriteIcon
+                                                      color="error"
+                                                      onClick={() =>
+                                                        this.dislikeCard(
+                                                          value.card_id
+                                                        )
+                                                      }
+                                                    />
+                                                  )}
+                                                </IconButton>
+                                                <span className="caption">
+                                                  {value.likes_count}
+                                                </span>
+                                                <IconButton aria-label="comment">
+                                                  <ChatBubbleOutlineOutlinedIcon
+                                                    onClick={() =>
+                                                      this.toggleCommentSection(
+                                                        true,
+                                                        value.name,
+                                                        value.card_id
+                                                      )
+                                                    }
+                                                  />
+                                                </IconButton>
+                                                <Drawer
+                                                  anchor="bottom"
+                                                  open={
+                                                    this.state.commentSection
+                                                  }
+                                                  onClose={() =>
                                                     this.toggleCommentSection(
                                                       false,
                                                       value.name
                                                     )
                                                   }
                                                 >
-                                                  <CloseIcon />
-                                                  &nbsp;Close
-                                                </Button>
-                                                <div className="p-3">
-                                                  <span className="h6">
-                                                    <center className="pb-1">
-                                                      {
-                                                        this.state
-                                                          .commentForCardName
-                                                      }
-                                                    </center>
-                                                  </span>
-                                                </div>
-                                                <form id="card-comment-form">
-                                                  <div className="col-md-12 mb-3">
-                                                    <TextField
-                                                      fullWidth
-                                                      multiline
-                                                      rows={2}
-                                                      rowsMax={4}
-                                                      name="card_comment"
-                                                      id="inputCardComment"
-                                                      defaultValue={
-                                                        this.state.card_comment
-                                                      }
-                                                      variant="outlined"
-                                                      onChange={
-                                                        this.handleInputChange
-                                                      }
-                                                      placeholder="Write your comment here..."
-                                                      size="small"
-                                                    />
-                                                  </div>
-                                                  <div className="col-12 mb-3">
-                                                    <Button
-                                                      className="mb-2"
-                                                      onClick={() =>
-                                                        this.commentOnCard(
+                                                  <Button
+                                                    onClick={() =>
+                                                      this.toggleCommentSection(
+                                                        false,
+                                                        value.name
+                                                      )
+                                                    }
+                                                  >
+                                                    <CloseIcon />
+                                                    &nbsp;Close
+                                                  </Button>
+                                                  <div className="p-3">
+                                                    <span className="h6">
+                                                      <center className="pb-1">
+                                                        {
                                                           this.state
-                                                            .commentForCardId
-                                                        )
-                                                      }
-                                                      variant="contained"
-                                                      color="primary"
-                                                      size="medium"
-                                                      startIcon={
-                                                        <AddCommentIcon />
-                                                      }
-                                                    >
-                                                      Comment
-                                                    </Button>
-                                                    <Divider />
+                                                            .commentForCardName
+                                                        }
+                                                      </center>
+                                                    </span>
                                                   </div>
-                                                </form>
-                                                <div className="col-12 mb-3">
-                                                  {this.state.commentsList.map(
-                                                    (val) => (
-                                                      <div>
-                                                        <div className="mt-2">
-                                                          <Typography
-                                                            display="inline"
-                                                            variant="subtitle2"
-                                                            style={{
-                                                              flexGrow: 1,
-                                                            }}
-                                                          >
-                                                            <b>{val.user}:</b>
-                                                          </Typography>
-                                                          &nbsp;
-                                                          <Typography
-                                                            display="inline"
-                                                            variant="body2"
-                                                            style={{
-                                                              flexGrow: 1,
-                                                            }}
-                                                          >
-                                                            <i>{val.comment}</i>
-                                                          </Typography>
+                                                  <form id="card-comment-form">
+                                                    <div className="col-md-12 mb-3">
+                                                      <TextField
+                                                        fullWidth
+                                                        multiline
+                                                        rows={2}
+                                                        rowsMax={4}
+                                                        name="card_comment"
+                                                        id="inputCardComment"
+                                                        defaultValue={
+                                                          this.state
+                                                            .card_comment
+                                                        }
+                                                        variant="outlined"
+                                                        onChange={
+                                                          this.handleInputChange
+                                                        }
+                                                        placeholder="Write your comment here..."
+                                                        size="small"
+                                                      />
+                                                    </div>
+                                                    <div className="col-12 mb-3">
+                                                      <Button
+                                                        className="mb-2"
+                                                        onClick={() =>
+                                                          this.commentOnCard(
+                                                            this.state
+                                                              .commentForCardId
+                                                          )
+                                                        }
+                                                        variant="contained"
+                                                        color="primary"
+                                                        size="medium"
+                                                        startIcon={
+                                                          <AddCommentIcon />
+                                                        }
+                                                      >
+                                                        Comment
+                                                      </Button>
+                                                      <Divider />
+                                                    </div>
+                                                  </form>
+                                                  <div className="col-12 mb-3">
+                                                    {this.state.commentsList.map(
+                                                      (val) => (
+                                                        <div>
+                                                          <div className="mt-2">
+                                                            <Typography
+                                                              display="inline"
+                                                              variant="subtitle2"
+                                                              style={{
+                                                                flexGrow: 1,
+                                                              }}
+                                                            >
+                                                              <b>{val.user}:</b>
+                                                            </Typography>
+                                                            &nbsp;
+                                                            <Typography
+                                                              display="inline"
+                                                              variant="body2"
+                                                              style={{
+                                                                flexGrow: 1,
+                                                              }}
+                                                            >
+                                                              <i>
+                                                                {val.comment}
+                                                              </i>
+                                                            </Typography>
+                                                          </div>
+                                                          <div className="mb-2">
+                                                            <Typography
+                                                              className="pull-right"
+                                                              variant="caption"
+                                                              style={{
+                                                                flexGrow: 1,
+                                                              }}
+                                                            >
+                                                              {val.timeAgo}
+                                                            </Typography>
+                                                          </div>
+                                                          <Divider />
                                                         </div>
-                                                        <div className="mb-2">
-                                                          <Typography
-                                                            className="pull-right"
-                                                            variant="caption"
-                                                            style={{
-                                                              flexGrow: 1,
-                                                            }}
-                                                          >
-                                                            {val.timeAgo}
-                                                          </Typography>
-                                                        </div>
-                                                        <Divider />
-                                                      </div>
-                                                    )
-                                                  )}
-                                                </div>
-                                              </Drawer>
-                                              <span className="caption">{value.comments_count}</span>
-                                            </CardActions>
-                                          </div>
-                                        )}
-                                      </Card>
+                                                      )
+                                                    )}
+                                                  </div>
+                                                </Drawer>
+                                                <span className="caption">
+                                                  {value.comments_count}
+                                                </span>
+                                                <IconButton aria-label="swap cards">
+                                                  <SwapHorizIcon fontSize="medium" />
+                                                </IconButton>
+                                              </CardActions>
+                                            </div>
+                                          )}
+                                        </Card>
+                                      </div>
                                     </Grid>
                                   ))}
                                 </Grid>
