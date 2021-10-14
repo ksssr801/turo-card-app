@@ -100,8 +100,37 @@ class Home extends Component {
     this.setState({
       commentSection: action,
       commentForCardName: card,
-      commentForCardId: cardId
+      commentForCardId: cardId,
     });
+    if (action) this.getCardComments(cardId);
+    else this.getDashboardData()
+  };
+
+  getCardComments = (cardId) => {
+    const token = localStorage.getItem("token");
+    let headers = { Authorization: `Bearer ${token}` };
+    axios
+      .get("http://localhost:9090/dashboard/card-comments/" + cardId + "/", {
+        headers,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          this.setState({
+            commentsList: res.data.commentsList,
+          });
+        } else {
+        }
+      })
+      .catch((error) => {
+        console.log("error: ", error.response.data);
+        if (
+          error.response.data &&
+          error.response.data.code === "token_not_valid"
+        ) {
+          window.location.href = "/403";
+          localStorage.removeItem("token");
+        }
+      });
   };
 
   navigationBarHandler = (event, newValue) => {
@@ -151,9 +180,6 @@ class Home extends Component {
             userCards: res.data.userCardDetailsList,
           });
         } else {
-          this.setState({
-            loginMessage: "401 Unauthorized",
-          });
         }
       })
       .catch((error) => {
@@ -182,9 +208,6 @@ class Home extends Component {
             userCards: res.data.myCardCollection,
           });
         } else {
-          this.setState({
-            loginMessage: "401 Unauthorized",
-          });
         }
       })
       .catch((error) => {
@@ -268,18 +291,13 @@ class Home extends Component {
       })
       .then((res) => {
         console.log("res : ", res);
-        // if (res.status === 200) {
-        //   this.setState({
-        //     isAuthorized: true,
-        //     loginMessage: "Welcome, " + res.data.username,
-        //     currentUser: res.data.username,
-        //     userCards: res.data.myCardCollection,
-        //   });
-        // } else {
-        //   this.setState({
-        //     loginMessage: "401 Unauthorized",
-        //   });
-        // }
+        if (res.status === 200) {
+          this.getCardComments(cardId);
+          this.setState({
+            card_comment: ''
+          })
+        } else {
+        }
       })
       .catch((error) => {
         console.log("error: ", error.response.data);
@@ -414,13 +432,13 @@ class Home extends Component {
                                         sx={{ height: 280, width: 210 }}
                                         className={value.extra_params.card_css}
                                       >
-                                        <CardContent>
+                                        <CardContent style={{ height: "29vh", overflowY: "auto" }}>
                                           <div className="card-content-centered p-2">
                                             <div className="img-wrapper">
                                               <img
                                                 className="profile-image"
                                                 src={
-                                                  value.extra_params.default_img
+                                                  value.card_image || value.extra_params.default_img
                                                 }
                                                 alt="Avatar"
                                               />
@@ -510,45 +528,47 @@ class Home extends Component {
                                                     </center>
                                                   </span>
                                                 </div>
-                                                <div className="col-md-12 mb-3">
-                                                  <TextField
-                                                    fullWidth
-                                                    multiline
-                                                    rows={2}
-                                                    rowsMax={4}
-                                                    name="card_comment"
-                                                    id="inputCardComment"
-                                                    defaultValue={
-                                                      this.state.card_comment
-                                                    }
-                                                    variant="outlined"
-                                                    onChange={
-                                                      this.handleInputChange
-                                                    }
-                                                    placeholder="Write your comment here..."
-                                                    size="small"
-                                                  />
-                                                </div>
-                                                <div className="col-12 mb-3">
-                                                  <Button
-                                                    className="mb-2"
-                                                    onClick={() =>
-                                                      this.commentOnCard(
-                                                        this.state
-                                                          .commentForCardId
-                                                      )
-                                                    }
-                                                    variant="contained"
-                                                    color="primary"
-                                                    size="medium"
-                                                    startIcon={
-                                                      <AddCommentIcon />
-                                                    }
-                                                  >
-                                                    Comment
-                                                  </Button>
-                                                  <Divider />
-                                                </div>
+                                                <form id="card-comment-form">
+                                                  <div className="col-md-12 mb-3">
+                                                    <TextField
+                                                      fullWidth
+                                                      multiline
+                                                      rows={2}
+                                                      rowsMax={4}
+                                                      name="card_comment"
+                                                      id="inputCardComment"
+                                                      defaultValue={
+                                                        this.state.card_comment
+                                                      }
+                                                      variant="outlined"
+                                                      onChange={
+                                                        this.handleInputChange
+                                                      }
+                                                      placeholder="Write your comment here..."
+                                                      size="small"
+                                                    />
+                                                  </div>
+                                                  <div className="col-12 mb-3">
+                                                    <Button
+                                                      className="mb-2"
+                                                      onClick={() =>
+                                                        this.commentOnCard(
+                                                          this.state
+                                                            .commentForCardId
+                                                        )
+                                                      }
+                                                      variant="contained"
+                                                      color="primary"
+                                                      size="medium"
+                                                      startIcon={
+                                                        <AddCommentIcon />
+                                                      }
+                                                    >
+                                                      Comment
+                                                    </Button>
+                                                    <Divider />
+                                                  </div>
+                                                </form>
                                                 <div className="col-12 mb-3">
                                                   {this.state.commentsList.map(
                                                     (val) => (
@@ -591,7 +611,7 @@ class Home extends Component {
                                                   )}
                                                 </div>
                                               </Drawer>
-                                              <span className="caption">5</span>
+                                              <span className="caption">{value.comments_count}</span>
                                             </CardActions>
                                           </div>
                                         )}

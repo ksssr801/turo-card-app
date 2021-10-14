@@ -18,6 +18,10 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import Switch from "@mui/material/Switch";
 import defaultProfile from "../assets/default_profile.jpg";
+import InfoIcon from "@mui/icons-material/Info";
+import { IconButton, Tooltip } from "@material-ui/core";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 class AddCard extends Component {
   componentDidMount() {}
@@ -29,6 +33,8 @@ class AddCard extends Component {
         card_name: "",
         card_descr: "",
       },
+      card_image: "",
+      raw_card_image: "",
       cardPublicVisibility: true,
       cardDrawer: false,
       selectedCard: {
@@ -85,6 +91,23 @@ class AddCard extends Component {
     });
   };
 
+  handleImageUpload = (event) => {
+    let reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = () => {
+      let imgBase64Path = reader.result;
+      this.setState({
+        card_image: imgBase64Path,
+      });
+    };
+  };
+
+  removeImage = () => {
+    this.setState({
+      card_image: '',
+    });
+  };
+
   getSelectedCard = (selected) => {
     let ckName = document.getElementsByName("card-select");
     let checkedEl = document.getElementById("card-chkbox-" + selected);
@@ -119,11 +142,13 @@ class AddCard extends Component {
       cardPublicVisibility: event.target.checked,
     });
   };
+
   submitHandler = (event) => {
     let cardDetails = {
       cardInfo: this.state.cardInfo,
       selectedCard: this.state.selectedCard,
       cardPublicVisibility: this.state.cardPublicVisibility,
+      cardImage: this.state.card_image,
     };
     const token = localStorage.getItem("token");
     let headers = { Authorization: `Bearer ${token}` };
@@ -279,7 +304,50 @@ class AddCard extends Component {
                     size="small"
                   />
                 </div>
-                <div className="col-md-6 mb-3">
+                <div className="col-md-3 mb-3">
+                  <InputLabel id="demo-simple-select-label">
+                    Profile Image
+                  </InputLabel>
+                  <Button
+                    variant="contained"
+                    component="label"
+                    name="card_image"
+                    id="inputCardImage"
+                  >
+                    {this.state.card_image && (
+                      <span>
+                        <CheckCircleIcon fontSize="small" color="success" />
+                        &nbsp;
+                      </span>
+                    )}
+                    Upload Image
+                    <input
+                      type="file"
+                      onChange={this.handleImageUpload}
+                      accept="image/*"
+                      hidden
+                    />
+                  </Button>
+                  &nbsp;
+                  <Tooltip title="Select a card to get the preview of the uploaded image.">
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
+                  &nbsp;&nbsp;&nbsp;
+                  {this.state.card_image && (
+                    <span>
+                      <Tooltip title="Remove Image">
+                        <IconButton>
+                          <DeleteIcon
+                            fontSize="small"
+                            color="error"
+                            onClick={this.removeImage}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    </span>
+                  )}
+                </div>
+                <div className="col-md-3 mb-3">
                   <InputLabel id="demo-simple-select-label">
                     Public Visibility
                   </InputLabel>
@@ -320,7 +388,10 @@ class AddCard extends Component {
                             <div className="card-content-centered p-1">
                               <img
                                 className="mt-5"
-                                src={this.state.selectedCard.default_img}
+                                src={
+                                  this.state.card_image ||
+                                  this.state.selectedCard.default_img
+                                }
                                 alt="Avatar"
                               />
                               <div className="h5 mt-1 text-bold text-white">
@@ -339,15 +410,28 @@ class AddCard extends Component {
                   </div>
                 )}
                 <div className="col-12 mb-3">
-                  <Button
-                    onClick={this.submitHandler}
-                    variant="contained"
-                    color="primary"
-                    size="medium"
-                    startIcon={<SaveIcon />}
-                  >
-                    Save
-                  </Button>
+                  {this.state.isCardSelected && (
+                    <Button
+                      onClick={this.submitHandler}
+                      variant="contained"
+                      color="primary"
+                      size="medium"
+                      startIcon={<SaveIcon />}
+                    >
+                      Save
+                    </Button>
+                  )}
+                  {!this.state.isCardSelected && (
+                    <Button
+                      disabled
+                      variant="contained"
+                      color="primary"
+                      size="medium"
+                      startIcon={<SaveIcon />}
+                    >
+                      Save
+                    </Button>
+                  )}
                   <ToastContainer
                     position="bottom-right"
                     autoClose={2500}
