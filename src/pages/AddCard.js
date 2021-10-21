@@ -111,6 +111,7 @@ class AddCard extends Component {
   getSelectedCard = (selected) => {
     let ckName = document.getElementsByName("card-select");
     let checkedEl = document.getElementById("card-chkbox-" + selected);
+    console.log(ckName, checkedEl, checkedEl.checked)
     if (checkedEl.checked) {
       for (let i = 0; i < ckName.length; i++) {
         if (!ckName[i].checked) {
